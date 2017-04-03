@@ -1,0 +1,8 @@
+--import Control.Applicative
+--import Control.Monad
+--import System.IO
+--
+--main :: IO ()
+--main = interact (unlines f lines)
+--
+--f x = x
