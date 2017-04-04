@@ -17,7 +17,7 @@ interactFile fun fileName = do
   putStr (fun s)
 
 f :: [String] -> [String]
-f ll = map (show . getMostCommonBird . parseBirds) $ tail ll
+f ll = map (show . getMostCommonBird . sort . parseBirds) $ tail ll
 
 parseBirds :: String -> [Int]
 parseBirds xx = map read $ words xx
