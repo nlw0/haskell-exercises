@@ -1,5 +1,5 @@
 module Main where
 
-import ExtraLongFactorials
+import SplitBinary
 
-main = extraLongFactorialsMain
+main = splitBinaryMain
