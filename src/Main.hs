@@ -1,5 +1,5 @@
 module Main where
 
-import SplitBinary
+import WordCount
 
-main = splitBinaryMain
+main = wordCount
