@@ -1,5 +1,5 @@
 module Main where
 
-import WordCount
+import Chunkenizer
 
-main = wordCount
+main = testChunkenizer
