@@ -23,25 +23,27 @@ interactFile maybeFilename fun = do
   where
     maybeFile = fmap readFile maybeFilename
 
-f s = unlines $ fmap show $ startChunkenize 5 s
+f s = unlines $ fmap show $ startChunkenize 15 s
 
 startChunkenize :: Int -> String -> [String]
-startChunkenize n s = addRowToFirstChunk firstRow $ chunkenize n s
+startChunkenize n s = addRowToFirstChunk firstRow $ catMaybes $ chunkenize n s
   where (firstRow, _) = takeRow s
 
-chunkenize :: Int -> String -> [String]
+chunkenize :: Int -> String -> [Maybe String]
 chunkenize _ "" = []
-chunkenize 1 s = [meat]
+chunkenize 1 s = [Just meat]
   where (_, meat) = takeRow s
-chunkenize n s = (cleanMeat++bone) : chunkenize (n - 1) remaining
-  where baseSize = (div (length s) n)
-        (chunkMeat, remaining) = splitAt baseSize s
-        (_, cleanMeat) = takeRow chunkMeat
-        (bone, _) = takeRow remaining
+chunkenize n s = do
+  let baseSize = (div (length s) n)
+  let (chunkMeat, remaining) = splitAt baseSize s
+  Just (_, cleanMeat) <- takeRow chunkMeat
+  Just (bone, _) <- takeRow remaining
+  Just (cleanMeat++bone) : chunkenize (n - 1) remaining
 
 takeRow s = case span (/= '\n') s of
-            (fat, '\n' : cleanMeat) -> (fat ++ "\n", cleanMeat)
-            (fat, cleanMeat) -> (fat, cleanMeat)
+            (fat, '\n' : cleanMeat) -> Just (fat ++ "\n", cleanMeat)
+            otherwise -> Nothing
+            
 addRowToFirstChunk :: String -> [String] -> [String]
 addRowToFirstChunk a [] = [a]
 addRowToFirstChunk a (x:xs) = (a ++ x) : xs
