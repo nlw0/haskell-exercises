@@ -23,7 +23,7 @@ interactFile maybeFilename fun = do
   where
     maybeFile = fmap readFile maybeFilename
 
-f blockSize s = unlines $ chunkenize blockSize s
+f blockSize s = unlines $ fmap show $ chunkenize blockSize s
 
 chunkenize :: Int -> String -> [String]
 chunkenize baseSize s = addLineToFirstChunk firstLine $ chunkenize' baseSize s
