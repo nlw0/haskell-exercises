@@ -12,9 +12,9 @@ import           System.IO
 
 testChunkenizer :: IO ()
 testChunkenizer = do
-  args <- getArgs
-  let filename = listToMaybe args
-  interactFile filename f
+  (blockSize: fnArg) <- getArgs
+  let filename = listToMaybe fnArg
+  interactFile filename (f (read blockSize))
 
 interactFile :: Maybe String -> (String->String) -> IO ()
 interactFile maybeFilename fun = do
@@ -23,27 +23,27 @@ interactFile maybeFilename fun = do
   where
     maybeFile = fmap readFile maybeFilename
 
-f s = unlines $ fmap show $ startChunkenize 15 s
+f blockSize s = unlines $ chunkenize blockSize s
 
-startChunkenize :: Int -> String -> [String]
-startChunkenize n s = addRowToFirstChunk firstRow $ catMaybes $ chunkenize n s
-  where (firstRow, _) = takeRow s
+chunkenize :: Int -> String -> [String]
+chunkenize baseSize s = addLineToFirstChunk firstLine $ chunkenize' baseSize s
+  where (firstLine, _) = takeLine s
 
-chunkenize :: Int -> String -> [Maybe String]
-chunkenize _ "" = []
-chunkenize 1 s = [Just meat]
-  where (_, meat) = takeRow s
-chunkenize n s = do
-  let baseSize = (div (length s) n)
-  let (chunkMeat, remaining) = splitAt baseSize s
-  Just (_, cleanMeat) <- takeRow chunkMeat
-  Just (bone, _) <- takeRow remaining
-  Just (cleanMeat++bone) : chunkenize (n - 1) remaining
+chunkenize' :: Int -> String -> [String]
+chunkenize' baseSize s = if newChunk /= "" then newChunk : chunkenize' baseSize remaining else []
+  where
+    (headerToDrop, newData) = takeLine s
+    adjustedChunkSize = baseSize - (length headerToDrop)
+    (chunkMeat, remaining) = splitAt adjustedChunkSize newData
+    (lastline, _) = takeLine remaining
+    newChunk = (chunkMeat ++ lastline)
 
-takeRow s = case span (/= '\n') s of
-            (fat, '\n' : cleanMeat) -> Just (fat ++ "\n", cleanMeat)
-            otherwise -> Nothing
-            
-addRowToFirstChunk :: String -> [String] -> [String]
-addRowToFirstChunk a [] = [a]
-addRowToFirstChunk a (x:xs) = (a ++ x) : xs
+takeLine :: String -> (String, String)
+takeLine s = (line ++ lineEnd, tailRest)
+  where
+    (line, rest) = break (== '\n') s
+    (lineEnd, tailRest) = splitAt 1 rest
+
+addLineToFirstChunk :: String -> [String] -> [String]
+addLineToFirstChunk a [] = [a]
+addLineToFirstChunk a (x:xs) = (a ++ x) : xs
