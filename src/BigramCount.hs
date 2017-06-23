@@ -29,6 +29,8 @@ f x = let normalizedWords = fmap normalizeString $ words x
           prettyPrint = unlines [ ([fst w,snd w]) ++ ": " ++ (show f) | (f, w) <- hitsPerWord]
       in prettyPrint
 
+
+
 countStuff :: (Foldable t, Ord a) => t a -> Map.Map a Integer
 countStuff stuff = foldl (\d k-> Map.insertWith (+) k 1 d) Map.empty stuff
 

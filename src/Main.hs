@@ -1,9 +1,9 @@
 module Main where
 
--- import Chunkenizer
+import Chunkenizer
 
--- main = testChunkenizer
+main = testChunkenizer
 
-import BigramCount
-
-main = bigramCount
+--import Quicksort
+--
+--main = quicksort
